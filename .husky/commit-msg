@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+. "$(dirname "$0")/h"
+
+# Run commitlint to check commit message format
+# npx --no -- commitlint --edit "$1"
+
+# npx --no-install commitlint --edit $1
+
+npx --no-install commitlint --edit "$1"
