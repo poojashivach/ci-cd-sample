@@ -15,6 +15,13 @@ fb
 sdfb
 bfb
 
+e;reb;
+]bg;we
+b;;b
+w;b
+rb
+w
+rw
 
 bsdc jkvndsjvnjdnvjnsdvjknjsnvjdnsvkjndskjnvjsnvjdnvjdsnvjndsvjdnvjdnsvj
 b
