@@ -6,31 +6,7 @@ import './App.css';
 function App() {
   // set count....
   /*
-vdskvnvnkfvnd
-bs;dfb
-d'fb
-
-b
-fb
-sdfb
-bfb
-
-e;reb;
-]bg;we
-b;;b
-w;b
-rb
-w
-rw
-
-bsdc jkvndsjvnjdnvjnsdvjknjsnvjdnsvkjndskjnvjsnvjdnvjdsnvjndsvjdnvjdnsvj
-b
-bsd
-b
-b
-b
-b
-bs
+svkdsvmk
   */
   const [count, setCount] = useState(0);
 
