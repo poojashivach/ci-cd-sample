@@ -40,7 +40,7 @@
       "pre-push": "npm run lint && npm run format"
     }
   },
-  "lint-staged": { // this is the hook that us called in pre-commit
+  "lint-staged": {
     "src/**/*.{ts,tsx,js,jsx}": [
       "npm run lint",
       "npm run format"
