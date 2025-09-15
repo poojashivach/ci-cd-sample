@@ -3,7 +3,7 @@ name: CDeployment
 permissions:
   id-token: write
   contents: read
-  
+
 on:
   push:
     branches:
@@ -26,6 +26,11 @@ jobs:
 
       - name: Install Dependencies
         run: npm ci
+
+      - name: Upload Github pages artifacts
+        uses: actions/upload-pages-artifact@v2
+        with:
+            path: dist    
 
       - name: Build
         run: npm run build
