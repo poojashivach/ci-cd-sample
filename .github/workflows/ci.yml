@@ -21,7 +21,7 @@ jobs:
             - name: Run Lint
               run: npm run lint
             - name: Run Formatter
-              run: npm run format
+              run: npm run lint:format
             - name: Check Commit Messages
               uses: wagoid/commitlint-github-action@v5
               with:
