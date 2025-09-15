@@ -9,6 +9,7 @@
     "lint": "eslint src --ext js,jsx,ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint src --ext js,jsx,ts,tsx --fix",
     "lint:format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,html}'",
+    "deploy": "gh-pages -d dist",
     "preview": "vite preview",
     "prepare": "husky"
   },
@@ -30,6 +31,7 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
+    "gh-pages": "^6.3.0",
     "globals": "^16.3.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.5",

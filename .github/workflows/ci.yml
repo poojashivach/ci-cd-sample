@@ -86,26 +86,28 @@ jobs:
       - name: Install Dependencies
         run: npm ci # Install dependencies using clean install
 
-      # - name: Set env variables
-      #   run: echo "Setting environment variables"
-      #   env:
-      #     REACT_APP_MY_SECRET: ${{ secrets.YOUR_SECRET_NAME }}   
-
       - name: Build
         env:
           VITE_MY_SECRET: ${{ secrets.YOUR_SECRET_NAME }}      
         run: npm run build # Build the project
 
-      - name: Upload Github pages artifacts
-        uses: actions/upload-pages-artifact@v4 # Upload build output as artifact
+      # - name: Upload Github pages artifacts
+      #   uses: actions/upload-pages-artifact@v4 # Upload build output as artifact
+      #   with:
+      #     path: dist # Specify build output directory
+
+      # - name: Echo Deploy Message
+      #   run: echo "Deploying to production URL..." # Log deploy message
+
+      # - name: Deploy to GitHub Pages
+      #   uses: actions/deploy-pages@v4 # Deploy artifact to GitHub Pages
+      #   # No inputs needed; artifact is used automatically
+
+      # Deploy to github pages
+      - name: Deploy to github pages
+        uses: peaceiris/actions-gh-pages@v4.0.0
         with:
-          path: dist # Specify build output directory
-
-      - name: Echo Deploy Message
-        run: echo "Deploying to production URL..." # Log deploy message
-
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v4 # Deploy artifact to GitHub Pages
-        # No inputs needed; artifact is used automatically
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: dist
 
 # End of workflow
