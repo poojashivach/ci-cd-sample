@@ -60,87 +60,7 @@ jobs:
       #     configFile: commitlint.config.js # Use custom commitlint config
 
       # Add more CI steps as needed (e.g., tests, coverage)
-
-  # CD Job: Build and Deploy to Dev (only on dev branch)
-  build-and-deploy-dev:
-    if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
-    runs-on: ubuntu-latest
-    environment:
-      name: dev
-    steps:
-      - name: Echo Run Name and Commit Timestamp
-        run: |
-          echo "Workflow Run Name: ${{ github.event.inputs.run-name != '' && github.event.inputs.run-name || format('CI-CD Run {0}', github.run_id) }}"
-          echo "Commit Timestamp: ${{ github.event.head_commit.timestamp }}"
-      - uses: actions/checkout@v4 # Checkout repository code
-        with:
-          persist-credentials: false # Recommended for GitHub Pages
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4 # Set up Node.js environment
-        with:
-          node-version: '22.x' # Use Node.js version 22.x
-          cache: 'npm' # Enable npm cache for faster installs
-          cache-dependency-path: package-lock.json # Cache based on lock file
-
-      - name: Install Dependencies
-        run: npm ci # Install dependencies using clean install
-
-      - name: Build
-        run: npm run build # Build the project
-
-      - name: Upload Dev artifacts
-        uses: actions/upload-pages-artifact@v4 # Upload build output as artifact
-        with:
-          path: dist # Specify build output directory
-
-      - name: Echo Deploy Message
-        run: echo "Deploying to dev environment..." # Log deploy message
-
-      # Replace with your dev deployment step or service
-      - name: Deploy to Dev
-        run: echo "Dev deployment step here" # Placeholder for actual deployment
-
-  # CD Job: Build and Deploy to Staging (only on staging branch)
-  build-and-deploy-staging:
-    if: github.ref == 'refs/heads/staging' && github.event_name == 'push'
-    runs-on: ubuntu-latest
-    environment:
-      name: staging
-    steps:
-      - name: Echo Run Name and Commit Timestamp
-        run: |
-          echo "Workflow Run Name: ${{ github.event.inputs.run-name != '' && github.event.inputs.run-name || format('CI-CD Run {0}', github.run_id) }}"
-          echo "Commit Timestamp: ${{ github.event.head_commit.timestamp }}"
-      - uses: actions/checkout@v4 # Checkout repository code
-        with:
-          persist-credentials: false # Recommended for GitHub Pages
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4 # Set up Node.js environment
-        with:
-          node-version: '22.x' # Use Node.js version 22.x
-          cache: 'npm' # Enable npm cache for faster installs
-          cache-dependency-path: package-lock.json # Cache based on lock file
-
-      - name: Install Dependencies
-        run: npm ci # Install dependencies using clean install
-
-      - name: Build
-        run: npm run build # Build the project
-
-      - name: Upload Staging artifacts
-        uses: actions/upload-pages-artifact@v4 # Upload build output as artifact
-        with:
-          path: dist # Specify build output directory
-
-      - name: Echo Deploy Message
-        run: echo "Deploying to staging environment..." # Log deploy message
-
-      # Replace with your staging deployment step or service
-      - name: Deploy to Staging
-        run: echo "Staging deployment step here" # Placeholder for actual deployment
-
+ 
   # CD Job: Build and Deploy to Production (only on main branch)
   build-and-deploy:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -166,6 +86,11 @@ jobs:
       - name: Install Dependencies
         run: npm ci # Install dependencies using clean install
 
+      - name: Set env variables
+        run: echo "Setting environment variables"
+        env:
+          REACT_APP_MY_SECRET: ${{ secrets.MY_SECRET }}   
+          
       - name: Build
         run: npm run build # Build the project
 

@@ -8,7 +8,7 @@ permissions:
 on:
   push:
     branches:
-      - main
+      - main555
 
 jobs:
   build-and-deploy:

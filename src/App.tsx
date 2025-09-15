@@ -15,6 +15,7 @@ dsvfdbfbdbfdb
   return (
     <>
       <div>
+        Secret: {process.env.REACT_APP_MY_SECRET}
         <a href="https://vite.dev" target="_blank" rel="noreferrer">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
