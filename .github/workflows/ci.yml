@@ -1,6 +1,11 @@
 # This workflow runs CI checks on all pushes/PRs and deploys to GitHub Pages on main branch
 name: CI-CD Integration
 
+permissions:
+  id-token: write
+  contents: write
+  pages: write
+
 # Trigger CI on all pushes and PRs, and CD only on pushes to main
 # on:
 #   push: # Trigger on any push
@@ -19,10 +24,6 @@ on:
         default: ''
 # Note: The workflow name itself cannot be dynamic, but you can set a dynamic run name for workflow_dispatch runs.
 
-permissions:
-  id-token: write
-  contents: read
-  pages: write
 
 jobs:
   # CI Job: Lint, Format, Test, etc.
@@ -108,6 +109,6 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: dist
+          publish_dir: ./dist
 
 # End of workflow
