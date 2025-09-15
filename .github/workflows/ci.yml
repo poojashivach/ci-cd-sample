@@ -93,7 +93,7 @@ jobs:
 
       - name: Build
         env:
-          REACT_APP_MY_SECRET: ${{ secrets.YOUR_SECRET_NAME }}      
+          VITE_MY_SECRET: ${{ secrets.YOUR_SECRET_NAME }}      
         run: npm run build # Build the project
 
       - name: Upload Github pages artifacts
