@@ -86,12 +86,14 @@ jobs:
       - name: Install Dependencies
         run: npm ci # Install dependencies using clean install
 
-      - name: Set env variables
-        run: echo "Setting environment variables"
-        env:
-          REACT_APP_MY_SECRET: ${{ secrets.YOUR_SECRET_NAME }}   
+      # - name: Set env variables
+      #   run: echo "Setting environment variables"
+      #   env:
+      #     REACT_APP_MY_SECRET: ${{ secrets.YOUR_SECRET_NAME }}   
 
       - name: Build
+        env:
+          REACT_APP_MY_SECRET: ${{ secrets.YOUR_SECRET_NAME }}      
         run: npm run build # Build the project
 
       - name: Upload Github pages artifacts
