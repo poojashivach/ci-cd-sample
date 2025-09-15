@@ -1,0 +1,28 @@
+name: CIntegration
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: justAName
+        uses: actions/setup-node@v2
+        with:
+          node-version: '22.13.0'
+      - name: Intall Deps
+        run: npm install
+      - name: Run lintrs
+        run: npm run lint
+      - name: Run formttes
+        run: npm run lint:format
+      - name: Check commit messages
+        uses: wagoid/commitlint-github-action@v3
+        with:
+          configFile: commitlint.config.js
