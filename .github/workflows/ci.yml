@@ -89,8 +89,8 @@ jobs:
       - name: Set env variables
         run: echo "Setting environment variables"
         env:
-          REACT_APP_MY_SECRET: ${{ secrets.MY_SECRET }}   
-          
+          REACT_APP_MY_SECRET: ${{ secrets.YOUR_SECRET_NAME }}   
+
       - name: Build
         run: npm run build # Build the project
 
