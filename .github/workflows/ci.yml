@@ -1,28 +1,161 @@
-name: CIntegration
+# This workflow runs CI checks on all pushes/PRs and deploys to GitHub Pages on main branch
+name: CI-CD Integration
+
+# Trigger CI on all pushes and PRs, and CD only on pushes to main
+# on:
+#   push: # Trigger on any push
+#   pull_request: # Trigger on any pull request
 
 on:
-    push:
-    pull_request:
+  push:
+    branches: ["main", "dev"] # Trigger on push to main or dev branches
+  pull_request:
+    branches: ["main", "dev"] # Trigger on PR to main or dev branches
+
+permissions:
+  id-token: write
+  contents: read
+  pages: write
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
+  # CI Job: Lint, Format, Test, etc.
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4 # Checkout repository code
+        with:
+          fetch-depth: 0 # Fetch all history for accurate commit info
 
-        steps:
-            - uses: actions/checkout@v4
-              with:
-                fetch-depth: 0
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                node-version: '22.x'
-            - name: Install Dependencies
-              run: npm ci
-            - name: Run Lint
-              run: npm run lint
-            - name: Run Formatter
-              run: npm run lint:format
-            # - name: Check Commit Messages
-            #   uses: wagoid/commitlint-github-action@v5
-            #   with:
-            #     configFile: commitlint.config.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4 # Set up Node.js environment
+        with:
+          node-version: '22.x' # Use Node.js version 22.x
+          cache: 'npm' # Enable npm cache for faster installs
+          cache-dependency-path: package-lock.json # Cache based on lock file
+          
+      - name: Install Dependencies
+        run: npm ci # Install dependencies using clean install
+
+      - name: Run Lint
+        run: npm run lint # Run linter to check code quality
+
+      - name: Run Formatter
+        run: npm run lint:format # Run code formatter
+
+      # Uncomment below to enable commit message linting
+      # - name: Check Commit Messages
+      #   uses: wagoid/commitlint-github-action@v5 # Lint commit messages
+      #   with:
+      #     configFile: commitlint.config.js # Use custom commitlint config
+
+      # Add more CI steps as needed (e.g., tests, coverage)
+
+  # CD Job: Build and Deploy to Dev (only on dev branch)
+  build-and-deploy-dev:
+    if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    steps:
+      - uses: actions/checkout@v4 # Checkout repository code
+        with:
+          persist-credentials: false # Recommended for GitHub Pages
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4 # Set up Node.js environment
+        with:
+          node-version: '22.x' # Use Node.js version 22.x
+          cache: 'npm' # Enable npm cache for faster installs
+          cache-dependency-path: package-lock.json # Cache based on lock file
+
+      - name: Install Dependencies
+        run: npm ci # Install dependencies using clean install
+
+      - name: Build
+        run: npm run build # Build the project
+
+      - name: Upload Dev artifacts
+        uses: actions/upload-pages-artifact@v4 # Upload build output as artifact
+        with:
+          path: dist # Specify build output directory
+
+      - name: Echo Deploy Message
+        run: echo "Deploying to dev environment..." # Log deploy message
+
+      # Replace with your dev deployment step or service
+      - name: Deploy to Dev
+        run: echo "Dev deployment step here" # Placeholder for actual deployment
+
+  # CD Job: Build and Deploy to Staging (only on staging branch)
+  build-and-deploy-staging:
+    if: github.ref == 'refs/heads/staging' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+    steps:
+      - uses: actions/checkout@v4 # Checkout repository code
+        with:
+          persist-credentials: false # Recommended for GitHub Pages
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4 # Set up Node.js environment
+        with:
+          node-version: '22.x' # Use Node.js version 22.x
+          cache: 'npm' # Enable npm cache for faster installs
+          cache-dependency-path: package-lock.json # Cache based on lock file
+
+      - name: Install Dependencies
+        run: npm ci # Install dependencies using clean install
+
+      - name: Build
+        run: npm run build # Build the project
+
+      - name: Upload Staging artifacts
+        uses: actions/upload-pages-artifact@v4 # Upload build output as artifact
+        with:
+          path: dist # Specify build output directory
+
+      - name: Echo Deploy Message
+        run: echo "Deploying to staging environment..." # Log deploy message
+
+      # Replace with your staging deployment step or service
+      - name: Deploy to Staging
+        run: echo "Staging deployment step here" # Placeholder for actual deployment
+
+  # CD Job: Build and Deploy to Production (only on main branch)
+  build-and-deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/checkout@v4 # Checkout repository code
+        with:
+          persist-credentials: false # Recommended for GitHub Pages
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4 # Set up Node.js environment
+        with:
+          node-version: '22.x' # Use Node.js version 22.x
+          cache: 'npm' # Enable npm cache for faster installs
+          cache-dependency-path: package-lock.json # Cache based on lock file
+
+      - name: Install Dependencies
+        run: npm ci # Install dependencies using clean install
+
+      - name: Build
+        run: npm run build # Build the project
+
+      - name: Upload Github pages artifacts
+        uses: actions/upload-pages-artifact@v4 # Upload build output as artifact
+        with:
+          path: dist # Specify build output directory
+
+      - name: Echo Deploy Message
+        run: echo "Deploying to production URL..." # Log deploy message
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4 # Deploy artifact to GitHub Pages
+        # No inputs needed; artifact is used automatically
+
+# End of workflow
