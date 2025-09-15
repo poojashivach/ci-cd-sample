@@ -24,17 +24,23 @@ jobs:
           node-version: '22.x'
           cache: 'npm'
 
+      # 1.Install dependencies
       - name: Install Dependencies
         run: npm ci
 
-      - name: Upload Github pages artifacts
-        uses: actions/upload-pages-artifact@v4
-        with:
-            path: dist    
+      # 2.Build
 
       - name: Build
         run: npm run build
 
+      # 3.Upload artifact
+
+      - name: Upload Github pages artifacts
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+          
+      # 4.Deploy
       - name: Echo Deploy Message
         if: github.ref == 'refs/heads/main'
         run: echo "Deploying to production URL..."
