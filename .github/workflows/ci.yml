@@ -8,9 +8,16 @@ name: CI-CD Integration
 
 on:
   push:
-    branches: ["main", "dev"] # Trigger on push to main or dev branches
+    branches: ["main", "dev", "stagging"] # Trigger on push to main, dev, or stagging branches
   pull_request:
-    branches: ["main", "dev"] # Trigger on PR to main or dev branches
+    branches: ["main", "dev", "stagging"] # Trigger on PR to main, dev, or stagging branches
+  workflow_dispatch:
+    inputs:
+      run-name:
+        description: 'Custom run name (optional)'
+        required: false
+        default: ''
+# Note: The workflow name itself cannot be dynamic, but you can set a dynamic run name for workflow_dispatch runs.
 
 permissions:
   id-token: write
@@ -22,6 +29,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Echo Run Name and Commit Timestamp
+        run: |
+          echo "Workflow Run Name: ${{ github.event.inputs.run-name != '' && github.event.inputs.run-name || format('CI-CD Run {0}', github.run_id) }}"
+          echo "Commit Timestamp: ${{ github.event.head_commit.timestamp }}"
       - uses: actions/checkout@v4 # Checkout repository code
         with:
           fetch-depth: 0 # Fetch all history for accurate commit info
@@ -57,6 +68,10 @@ jobs:
     environment:
       name: dev
     steps:
+      - name: Echo Run Name and Commit Timestamp
+        run: |
+          echo "Workflow Run Name: ${{ github.event.inputs.run-name != '' && github.event.inputs.run-name || format('CI-CD Run {0}', github.run_id) }}"
+          echo "Commit Timestamp: ${{ github.event.head_commit.timestamp }}"
       - uses: actions/checkout@v4 # Checkout repository code
         with:
           persist-credentials: false # Recommended for GitHub Pages
@@ -93,6 +108,10 @@ jobs:
     environment:
       name: staging
     steps:
+      - name: Echo Run Name and Commit Timestamp
+        run: |
+          echo "Workflow Run Name: ${{ github.event.inputs.run-name != '' && github.event.inputs.run-name || format('CI-CD Run {0}', github.run_id) }}"
+          echo "Commit Timestamp: ${{ github.event.head_commit.timestamp }}"
       - uses: actions/checkout@v4 # Checkout repository code
         with:
           persist-credentials: false # Recommended for GitHub Pages
@@ -129,6 +148,10 @@ jobs:
     environment:
       name: github-pages
     steps:
+      - name: Echo Run Name and Commit Timestamp
+        run: |
+          echo "Workflow Run Name: ${{ github.event.inputs.run-name != '' && github.event.inputs.run-name || format('CI-CD Run {0}', github.run_id) }}"
+          echo "Commit Timestamp: ${{ github.event.head_commit.timestamp }}"
       - uses: actions/checkout@v4 # Checkout repository code
         with:
           persist-credentials: false # Recommended for GitHub Pages
