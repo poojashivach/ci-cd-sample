@@ -79,12 +79,15 @@ jobs:
           recreate: true
           path: code-coverage-results.md   
 
-      - name: Coveralls
-        uses: coverallsapp/github-action@v2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ./coverage/lcov.info  
-            
+      # - name: Coveralls
+      #   uses: coverallsapp/github-action@v2
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     path-to-lcov: ./coverage/lcov.info  
+
+      - name: Go cover diff
+        uses: kskitek/coverdiff@v0.3.0
+
 # CD Job: Build and Deploy to Production (only on main branch)
   build-and-deploy:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
