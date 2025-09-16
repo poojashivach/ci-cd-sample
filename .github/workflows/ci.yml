@@ -92,7 +92,24 @@ jobs:
         run: npx jest --coverage --coverageReporters json-summary
 
       - name: Jest Coverage Comment
-        uses: MishaKav/jest-coverage-comment@main  
+        uses: MishaKav/jest-coverage-comment@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          coverage-summary-path: ./coverage/coverage-summary.json
+          title: My Jest Coverage Comment
+          summary-title: My Summary Title
+          badge-title: Coverage
+          hide-comment: false
+          create-new-comment: false
+          hide-summary: false
+          remove-links-to-files: false
+          remove-links-to-lines: false
+          junitxml-title: My JUnit Title
+          junitxml-path: ./coverage/junit.xml
+          coverage-title: My Coverage Title
+          coverage-path: ./coverage.txt
+          coverage-path-prefix: src/
+          report-only-changed-files: false  
 
 # CD Job: Build and Deploy to Production (only on main branch)
   build-and-deploy:
