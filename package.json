@@ -9,7 +9,7 @@
     "lint": "eslint src --ext js,jsx,ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint src --ext js,jsx,ts,tsx --fix",
     "lint:format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,html}'",
-    "deploy": "gh-pages -d dist",
+    // "deploy": "gh-pages -d dist",
     "preview": "vite preview",
     "prepare": "husky"
   },
