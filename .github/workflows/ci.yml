@@ -16,7 +16,7 @@ on:
     branches: ["main", "dev", "stagging"] # Trigger on push to main, dev, or stagging branches
   pull_request:
     branches: ["main", "dev", "stagging"] # Trigger on PR to main, dev, or stagging branches
-  workflow_dispatch:
+  workflow_dispatch: # only this will allow us to manually trigger the ci-cd workflow
     inputs:
       run-name:
         description: 'Custom run name (optional)'
@@ -53,14 +53,6 @@ jobs:
 
       - name: Run Formatter
         run: npm run lint:format # Run code formatter
-
-      # Uncomment below to enable commit message linting
-      # - name: Check Commit Messages
-      #   uses: wagoid/commitlint-github-action@v5 # Lint commit messages
-      #   with:
-      #     configFile: commitlint.config.js # Use custom commitlint config
-
-      # Add more CI steps as needed (e.g., tests, coverage)
  
   # CD Job: Build and Deploy to Production (only on main branch)
   build-and-deploy:

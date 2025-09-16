@@ -11,11 +11,12 @@ casccvsavcassvdv;sdv'dsb'sdb
 dsvfdbfbdbfdb
   */
   const [count, setCount] = useState(0);
+  const apiUrl = import.meta.env.VITE_MY_SECRET;
 
   return (
     <>
       <div>
-        Secret: {process.env.VITE_MY_SECRET}
+        Secret: {apiUrl}
         <a href="https://vite.dev" target="_blank" rel="noreferrer">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
