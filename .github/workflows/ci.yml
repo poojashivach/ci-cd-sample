@@ -88,6 +88,12 @@ jobs:
       - name: Jest Coverage Comment
         uses: MishaKav/jest-coverage-comment@main
 
+      - name: Run tests with coverage
+        run: npx jest --coverage --coverageReporters json-summary
+
+      - name: Jest Coverage Comment
+        uses: MishaKav/jest-coverage-comment@main  
+
 # CD Job: Build and Deploy to Production (only on main branch)
   build-and-deploy:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
