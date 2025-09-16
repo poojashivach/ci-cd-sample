@@ -87,8 +87,8 @@ jobs:
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: dist-files
-          path: dist/
+          name: github-pages
+          path: dist
 
       # - name: Echo Deploy Message
       #   run: echo "Deploying to production URL..." # Log deploy message
