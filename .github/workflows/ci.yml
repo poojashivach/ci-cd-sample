@@ -5,6 +5,7 @@ permissions:
   id-token: write
   contents: write
   pages: write
+  pull-requests: write
 
 # Trigger CI on all pushes and PRs, and CD only on pushes to main
 # on:
