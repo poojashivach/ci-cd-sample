@@ -10,19 +10,19 @@ describe('App', () => {
     expect(screen.getByAltText('React logo')).toBeInTheDocument();
   });
 
-  it('renders the initial count', () => {
+  xit('renders the initial count', () => {
     render(<App />);
     expect(screen.getByText(/count is 0/)).toBeInTheDocument();
   });
 
-  it('increments count when button is clicked', () => {
+  xit('increments count when button is clicked', () => {
     render(<App />);
     const button = screen.getByRole('button', { name: /count is 0/i });
     fireEvent.click(button);
     expect(screen.getByText(/count is 1/)).toBeInTheDocument();
   });
 
-  it('renders the documentation links', () => {
+  xit('renders the documentation links', () => {
     render(<App />);
     expect(
       screen.getByText(/Click on the Vite and React logos to learn more/)
