@@ -1,7 +1,8 @@
+import React from 'react';
 import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
-import './App.css';
+// import reactLogo from './assets/react.svg';
+// import viteLogo from '/vite.svg';
+import './App.module.scss';
 
 function App() {
   // set count....
@@ -11,17 +12,29 @@ casccvsavcassvdv;sdv'dsb'sdb
 dsvfdbfbdbfdb
   */
   const [count, setCount] = useState(0);
-  const apiUrl = import.meta.env.VITE_MY_SECRET;
+  // const apiUrl = import.meta.env.VITE_MY_SECRET;
 
   return (
-    <>
+    <React.Fragment>
       <div>
-        Secret: {apiUrl}
+        Secret: {22}
         <a href="https://vite.dev" target="_blank" rel="noreferrer">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
+          <img
+            src={
+              'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Vitejs-logo.svg/779px-Vitejs-logo.svg.png'
+            }
+            className="logo"
+            alt="Vite logo"
+          />
         </a>
         <a href="https://react.dev" target="_blank" rel="noreferrer">
-          <img src={reactLogo} className="logo react" alt="React logo" />
+          <img
+            src={
+              'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Vitejs-logo.svg/779px-Vitejs-logo.svg.png'
+            }
+            className="logo react"
+            alt="React logo"
+          />
         </a>
       </div>
       <h1>Vite + React</h1>
@@ -36,7 +49,7 @@ dsvfdbfbdbfdb
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
-    </>
+    </React.Fragment>
   );
 }
 
