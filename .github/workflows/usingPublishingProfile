@@ -1,0 +1,160 @@
+name: UI Deployment
+
+permissions:
+  contents: read
+  id-token: write
+
+on:
+  push:
+    branches:
+      - main
+      - release  
+      - develop
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Select environment for manual deployment"
+        required: true
+        type: choice
+        options:
+          - Prod
+          - Test
+          - Dev
+        default: Dev
+
+env:
+  NODE_VERSION: "20.16.0"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.set-env.outputs.environment }}
+      webapp-name: ${{ steps.set-env.outputs.webapp-name }}
+      backend-api-url: ${{ steps.set-env.outputs.backend-api-url }}
+      frontend-url: ${{ steps.set-env.outputs.frontend-url }}
+      azure-login-client-id: ${{ steps.set-env.outputs.azure-login-client-id }}
+      azure-access-token-client-id: ${{ steps.set-env.outputs.azure-access-token-client-id }}
+      azure-tenant-id: ${{ steps.set-env.outputs.azure-tenant-id }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set environment variables based on branch
+        id: set-env
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            # Manual trigger - use selected environment
+            ENV="${{ github.event.inputs.environment }}"
+          else
+            # Push trigger - determine environment from branch
+            if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+              ENV="Prod"
+            elif [[ "${{ github.ref }}" == "refs/heads/release" ]]; then
+              ENV="Test"  
+            elif [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
+              ENV="Dev"
+            else
+              echo "::error::Unsupported branch: ${{ github.ref }}"
+              exit 1
+            fi
+          fi
+          
+          echo "environment=$ENV" >> $GITHUB_OUTPUT
+          
+          # Set environment-specific variables
+          case $ENV in
+            "Prod")
+              echo "webapp-name=${{ vars.PROD_ENV_FRONTEND_UI_WEBAPP }}" >> $GITHUB_OUTPUT
+              echo "backend-api-url=${{ vars.PROD_ENV_VITE_BACKEND_API_URL }}" >> $GITHUB_OUTPUT
+              echo "frontend-url=${{ vars.PROD_ENV_VITE_FRONTEND_URL }}" >> $GITHUB_OUTPUT
+              echo "azure-login-client-id=${{ secrets.PROD_ENV_VITE_AZURE_LOGIN_APP_CLIENT_ID }}" >> $GITHUB_OUTPUT
+              echo "azure-access-token-client-id=${{ secrets.PROD_ENV_VITE_AZURE_ACCESS_TOKEN_APP_CLIENT_ID }}" >> $GITHUB_OUTPUT
+              echo "azure-tenant-id=${{ secrets.PROD_ENV_VITE_AZURE_TENANT_ID }}" >> $GITHUB_OUTPUT
+              ;;
+            "Test")
+              echo "webapp-name=${{ vars.TEST_ENV_FRONTEND_UI_WEBAPP }}" >> $GITHUB_OUTPUT
+              echo "backend-api-url=${{ vars.TEST_ENV_VITE_BACKEND_API_URL }}" >> $GITHUB_OUTPUT
+              echo "frontend-url=${{ vars.TEST_ENV_VITE_FRONTEND_URL }}" >> $GITHUB_OUTPUT
+              echo "azure-login-client-id=${{ secrets.TEST_ENV_VITE_AZURE_LOGIN_APP_CLIENT_ID }}" >> $GITHUB_OUTPUT
+              echo "azure-access-token-client-id=${{ secrets.TEST_ENV_VITE_AZURE_ACCESS_TOKEN_APP_CLIENT_ID }}" >> $GITHUB_OUTPUT
+              echo "azure-tenant-id=${{ secrets.TEST_ENV_VITE_AZURE_TENANT_ID }}" >> $GITHUB_OUTPUT
+              ;;
+            "Dev")
+              echo "webapp-name=${{ vars.DEV_ENV_FRONTEND_UI_WEBAPP }}" >> $GITHUB_OUTPUT
+              echo "backend-api-url=${{ vars.DEV_ENV_VITE_BACKEND_API_URL }}" >> $GITHUB_OUTPUT
+              echo "frontend-url=${{ vars.DEV_ENV_VITE_FRONTEND_URL }}" >> $GITHUB_OUTPUT
+              echo "azure-login-client-id=${{ secrets.DEV_ENV_VITE_AZURE_LOGIN_APP_CLIENT_ID }}" >> $GITHUB_OUTPUT
+              echo "azure-access-token-client-id=${{ secrets.DEV_ENV_VITE_AZURE_ACCESS_TOKEN_APP_CLIENT_ID }}" >> $GITHUB_OUTPUT
+              echo "azure-tenant-id=${{ secrets.DEV_ENV_VITE_AZURE_TENANT_ID }}" >> $GITHUB_OUTPUT
+              ;;
+          esac
+
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup Nexus registry
+        run: |
+          AUTH_TOKEN=$(echo -n "${{ secrets.NEXUS_USERTOKEN }}:${{ secrets.NEXUS_PASSCODE }}" | base64)
+          echo "registry=https://nexus-repo.ssg.xom.cloud/repository/npm-proxy/" > ~/.npmrc
+          echo "//nexus-repo.ssg.xom.cloud/repository/npm-proxy/:_auth=$AUTH_TOKEN" >> ~/.npmrc
+          echo "always-auth=true" >> ~/.npmrc
+          echo "strict-ssl=true" >> ~/.npmrc
+
+      - name: Install npm dependencies
+        run: npm install --legacy-peer-deps --verbose
+
+      - name: Build project
+        run: |
+          echo "Building for ${{ steps.set-env.outputs.environment }} environment..."
+          echo "Backend API URL: ${{ steps.set-env.outputs.backend-api-url }}"
+          npm run build
+        env:
+          VITE_BACKEND_API_URL: ${{ steps.set-env.outputs.backend-api-url }}
+          VITE_FRONTEND_URL: ${{ steps.set-env.outputs.frontend-url }}
+          VITE_AZURE_LOGIN_APP_CLIENT_ID: ${{ steps.set-env.outputs.azure-login-client-id }}
+          VITE_AZURE_ACCESS_TOKEN_APP_CLIENT_ID: ${{ steps.set-env.outputs.azure-access-token-client-id }}
+          VITE_AZURE_TENANT_ID: ${{ steps.set-env.outputs.azure-tenant-id }}
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifact-${{ steps.set-env.outputs.environment }}
+          path: ./dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: ${{ needs.build.outputs.environment }}
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifact-${{ needs.build.outputs.environment }}
+          path: build-artifact
+
+      - name: Deploy to Azure Web App (Production)
+        if: needs.build.outputs.environment == 'Prod'
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ needs.build.outputs.webapp-name }}
+          publish-profile: ${{ secrets.PROD_ENV_FRONTEND_UI_WEB_APP_PUBLISH_PROFILE }}
+          package: ./build-artifact
+
+      - name: Deploy to Azure Web App (Test)
+        if: needs.build.outputs.environment == 'Test'
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ needs.build.outputs.webapp-name }}
+          publish-profile: ${{ secrets.TEST_ENV_FRONTEND_UI_WEB_APP_PUBLISH_PROFILE }}
+          package: ./build-artifact
+
+      - name: Deploy to Azure Web App (Development)
+        if: needs.build.outputs.environment == 'Dev'
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ needs.build.outputs.webapp-name }}
+          publish-profile: ${{ secrets.DEV_ENV_FRONTEND_UI_WEB_APP_PUBLISH_PROFILE }}
+          package: ./build-artifact
