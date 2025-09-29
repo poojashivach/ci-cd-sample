@@ -158,3 +158,5 @@ jobs:
           app-name: ${{ needs.build.outputs.webapp-name }}
           publish-profile: ${{ secrets.DEV_ENV_FRONTEND_UI_WEB_APP_PUBLISH_PROFILE }}
           package: ./build-artifact
+
+
